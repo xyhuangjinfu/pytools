@@ -1,0 +1,33 @@
+{
+  "gitlab": {
+    "server_url": "",
+    "private_token": ""
+  },
+  "jenkins": {
+    "server_url": "",
+    "username": "",
+    "password": ""
+  },
+  "nexus": {
+    "server_url": "",
+    "username": "",
+    "password": ""
+  },
+  "apps": {
+    "app_name": {
+      "id": "",
+      "main_activity": "",
+      "project_id": "",
+      "local_path": ""
+    }
+  },
+  "libs": {
+    "lib_name": {
+      "group_id": "",
+      "project_id": "",
+      "git": "",
+      "module": "",
+      "local_path": ""
+    }
+  }
+}

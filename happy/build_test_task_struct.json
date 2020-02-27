@@ -1,0 +1,10 @@
+{
+  "apps": [
+    "app_name"
+  ],
+  "libs": [
+    "lib_name"
+  ],
+  "branch": "branch_name",
+  "release_note": "[Feat]xxxx(qqq)"
+}
