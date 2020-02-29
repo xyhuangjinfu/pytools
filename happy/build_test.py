@@ -35,6 +35,7 @@ def main():
         lib_test_version = sb_nxs.get_next_lib_version(lib)
         print(f'    {lib} -> {lib_test_version}')
         if lib_test_version is None:
+            print(f'    get {lib} test version fail')
             return
         lib_version_dict[lib] = lib_test_version
 
@@ -43,13 +44,28 @@ def main():
         r = sb_gtlb.update_lib_version(branch, lib, lib_test_version)
         print(f'    {lib} -> {r}')
         if not r:
+            print(f'    update {lib} version fail')
             return
+
+    print('check app work branch:')
+    for app in apps:
+        exist = sb_gtlb.is_app_branch_exist(app, branch)
+        if exist:
+            print(f'    {app} -> exist')
+        else:
+            create = sb_gtlb.create_app_branch(app, branch)
+            if create:
+                print(f'    {app} -> create')
+            else:
+                print(f'    create branch {branch} for {app} fail')
+                return
 
     print('update app dependencies:')
     for app in apps:
         r = sb_gtlb.update_app_dependencies(branch, app, lib_version_dict)
         print(f'    {app} -> {r}')
         if not r:
+            print(f'    update {app} dependencies fail')
             return
 
     print('build test lib:')
@@ -57,6 +73,7 @@ def main():
         r = sb_jks.build_test_lib(lib, branch, release_note)
         print(f'    {lib} -> {r}')
         if not r:
+            print(f'    build {lib} fail')
             return
 
     print('build test app:')
@@ -64,6 +81,7 @@ def main():
         r = sb_jks.build_test_app(app, branch, release_note)
         print(f'    {app} -> {r}')
         if not r:
+            print(f'    build {app} fail')
             return
 
 

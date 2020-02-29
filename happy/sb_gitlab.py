@@ -11,6 +11,46 @@ class SBGitlab:
         self._server = gitlab.Gitlab(url=self._sb_config['gitlab']['server_url'],
                                      private_token=self._sb_config['gitlab']['private_token'])
 
+    def is_app_branch_exist(self, app, branch):
+        """
+        检测app项目里面是否有指定branch
+        :param app:
+        :param branch:
+        :return: False-没有
+        """
+        app_info = self._get_app_info(app)
+
+        proj = self._server.projects.get(app_info['project_id'])
+
+        try:
+            proj.branches.get(branch)
+            return True
+        except Exception:
+            return False
+
+    def create_app_branch(self, app, branch):
+        """
+        为app新建工作分支，从master切
+        :param app:
+        :param branch:
+        :return: False-创建失败
+        """
+
+        app_info = self._get_app_info(app)
+
+        proj = self._server.projects.get(app_info['project_id'])
+
+        data = {
+            'branch': branch,
+            'ref': 'master'
+        }
+
+        try:
+            proj.branches.create(data)
+            return True
+        except Exception:
+            return False
+
     def update_lib_version(self, branch, lib, lib_version):
         """
         更新库的测试分支版本号为测试专用版本号
