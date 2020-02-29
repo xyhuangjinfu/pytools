@@ -2,7 +2,7 @@ import base64
 import json
 import urllib.request
 
-import sb_config
+from sb.base import sb_config
 
 
 class SBNexus:

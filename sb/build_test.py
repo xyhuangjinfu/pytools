@@ -9,15 +9,17 @@
 import json
 import sys
 
-import sb_config
-import sb_gitlab
-import sb_jenkins
-import sb_nexus
+from sb.base import sb_nexus, sb_jenkins, sb_config, sb_gitlab
 
 
 def main():
     task_file = sys.argv[1]
     task = json.load(open(task_file))
+
+    print(task)
+    execute = input('确认参数正确，继续执行？（y/n）')
+    if execute != 'y':
+        return
 
     apps = task['apps']
     libs = task['libs']

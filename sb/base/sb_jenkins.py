@@ -2,7 +2,7 @@ import time
 
 import jenkins
 
-import sb_config
+from sb.base import sb_config
 
 
 class SBJenkins:

@@ -3,47 +3,10 @@ import re
 import subprocess
 import sys
 
-ROOT_DIR = '/Users/huangjinfu/work/project'
+from sb.base import sb_config
 
-LIB_PATH = {
-    'app-sdk': ROOT_DIR + '/shanbay-biz-app-sdk/module-app-sdk',
-    'base': ROOT_DIR + '/shanbay-base-android/module-base',
-    'base-core': ROOT_DIR + '/shanbay-base-android-core/library'
-}
+sb_cfg = sb_config.SBConfig().config
 
-LIB_NAME = {
-    'app-sdk': 'com.shanbay.biz:app-sdk',
-    'base': 'com.shanbay.biz:base',
-    'base-core': 'com.shanbay.biz:base-core'
-}
-
-##############################################################################################################
-##############################################################################################################
-
-APP_PATH = {
-    'words': ROOT_DIR + '/shanbay-words-android/app',
-    'news': ROOT_DIR + '/shanbay-news-android/app',
-    'listen': ROOT_DIR + '/shanbay-listen-android/app',
-    'speak': ROOT_DIR + '/shanbay-speak-android/app',
-}
-
-APP_ID = {
-    'words': 'com.shanbay.sentence',
-    'news': 'com.shanbay.news',
-    'listen': 'com.shanbay.listen',
-    'speak': 'com.shanbay.speak',
-}
-
-APP_MAIN_ACTIVITY = {
-    'words': 'com.shanbay.words.startup.SplashActivity',
-    'news': 'com.shanbay.news.startup.SplashActivity',
-    'listen': 'com.shanbay.listen.startup.SplashActivity',
-    'speak': 'com.shanbay.speak.startup.activity.SplashActivity',
-}
-
-
-##############################################################################################################
-##############################################################################################################
 
 def change_lib_version(lib_path):
     """
@@ -177,18 +140,20 @@ def main():
     app_name = sys.argv[1]
     lib_names = sys.argv[2:]
 
+    app_info = sb_cfg['apps'][app_name]
     for l in lib_names:
-        new_lib_version = change_lib_version(LIB_PATH[l])
-        change_app_dependency(APP_PATH[app_name], LIB_NAME[l], new_lib_version)
-        error = upload_lib(LIB_PATH[l])
+        l_info = sb_cfg['libs'][l]
+        new_lib_version = change_lib_version(l_info['local_path'] + l_info['module'])
+        change_app_dependency(app_info['local_path'] + 'app', l_info['group_id'] + ':' + l, new_lib_version)
+        error = upload_lib(l_info['local_path'] + l_info['module'])
         if error != 0:
             return
 
-    apk_path = build_app(APP_PATH[app_name])
+    apk_path = build_app(app_info['local_path'] + 'app')
     if apk_path:
         error = install_app(apk_path)
         if error == 0:
-            launch_app(APP_ID[app_name], APP_MAIN_ACTIVITY[app_name])
+            launch_app(app_info['id'], app_info['main_activity'])
 
 
 if __name__ == '__main__':
