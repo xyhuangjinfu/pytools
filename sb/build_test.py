@@ -17,6 +17,7 @@ def _print_task(task):
     print('libs: ' + str(task['libs']))
     print('branch: ' + task['branch'])
     print('release_note: ' + task['release_note'])
+    print('rebuild_lib: ' + task['rebuild_lib'])
 
 
 def main():
