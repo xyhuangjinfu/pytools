@@ -3,7 +3,7 @@ import re
 import subprocess
 import sys
 
-from sb.base import sb_config
+from base import sb_config
 
 sb_cfg = sb_config.SBConfig().config
 
