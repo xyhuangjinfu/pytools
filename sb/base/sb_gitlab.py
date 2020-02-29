@@ -2,7 +2,7 @@ import re
 
 import gitlab
 
-from sb.base import sb_config
+from base import sb_config
 
 
 class SBGitlab:
