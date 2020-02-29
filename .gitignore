@@ -130,3 +130,6 @@ dmypy.json
 
 #idea
 .idea/
+
+#sb config
+sb_config.json
