@@ -6,5 +6,6 @@
     "lib_name"
   ],
   "branch": "branch_name",
-  "release_note": "[Feat]xxxx(qqq)"
+  "release_note": "[Feat]xxxx(qqq)",
+  "rebuild_lib": true
 }

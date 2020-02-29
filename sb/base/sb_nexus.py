@@ -11,10 +11,11 @@ class SBNexus:
         self._token = None
         self._login()
 
-    def get_next_lib_version(self, lib):
+    def get_next_lib_version(self, lib, rebuild_lib):
         """
         获取一个库的下一个可用的测试版本号
         :param lib:
+        :param rebuild_lib: True-生成下一个版本号，后续重新编译。False-使用之前编过的版本，默认是最新版本
         :return: 获取失败返回None
         """
         server_url = self._sb_config['nexus']['server_url']
@@ -48,6 +49,9 @@ class SBNexus:
             version_list.sort(reverse=True, key=sory_key)
 
             ver = version_list[0]
+            if not rebuild_lib:
+                return ver
+
             seg = ver.split('-')
             test_ver = seg[len(seg) - 1]
             test_ver = str(int(test_ver) + 1)

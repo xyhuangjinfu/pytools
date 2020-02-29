@@ -32,6 +32,7 @@ def main():
     libs = task['libs']
     branch = task['branch']
     release_note = task['release_note']
+    rebuild_lib = task['rebuild_lib']
 
     sb_cfg = sb_config.SBConfig()
     sb_nxs = sb_nexus.SBNexus(sb_cfg)
@@ -41,7 +42,7 @@ def main():
     lib_version_dict = {}
     print('get lib test version:')
     for lib in libs:
-        lib_test_version = sb_nxs.get_next_lib_version(lib)
+        lib_test_version = sb_nxs.get_next_lib_version(lib, rebuild_lib)
         print(f'    {lib} -> {lib_test_version}')
         if lib_test_version is None:
             print(f'    get {lib} test version fail')
@@ -49,12 +50,15 @@ def main():
         lib_version_dict[lib] = lib_test_version
 
     print('update lib version:')
-    for lib, version in lib_version_dict.items():
-        r = sb_gtlb.update_lib_version(branch, lib, lib_test_version)
-        print(f'    {lib} -> {r}')
-        if not r:
-            print(f'    update {lib} version fail')
-            return
+    if rebuild_lib:
+        for lib, version in lib_version_dict.items():
+            r = sb_gtlb.update_lib_version(branch, lib, lib_test_version)
+            print(f'    {lib} -> {r}')
+            if not r:
+                print(f'    update {lib} version fail')
+                return
+    else:
+        print(f'    not rebuild libs')
 
     print('check app work branch:')
     for app in apps:
@@ -78,12 +82,15 @@ def main():
             return
 
     print('build test lib:')
-    for lib in libs:
-        r = sb_jks.build_test_lib(lib, branch, release_note)
-        print(f'    {lib} -> {r}')
-        if not r:
-            print(f'    build {lib} fail')
-            return
+    if rebuild_lib:
+        for lib in libs:
+            r = sb_jks.build_test_lib(lib, branch, release_note)
+            print(f'    {lib} -> {r}')
+            if not r:
+                print(f'    build {lib} fail')
+                return
+    else:
+        print(f'    not rebuild libs')
 
     print('build test app:')
     for app in apps:
