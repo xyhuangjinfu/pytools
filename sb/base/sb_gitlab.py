@@ -98,6 +98,9 @@ class SBGitlab:
         :return:失败返回False
         """
 
+        if not lib_dict:
+            return True
+
         app_info = self._get_app_info(app)
 
         proj = self._server.projects.get(app_info['project_id'])

@@ -13,11 +13,11 @@ from base import sb_nexus, sb_jenkins, sb_config, sb_gitlab
 
 
 def _print_task(task):
-    print('apps: ' + str(task['apps']))
-    print('libs: ' + str(task['libs']))
-    print('branch: ' + task['branch'])
-    print('release_note: ' + task['release_note'])
-    print('rebuild_lib: ' + task['rebuild_lib'])
+    print(f'apps: {str(task["apps"])}')
+    print(f'libs: {str(task["libs"])}')
+    print(f'branch: {task["branch"]}')
+    print(f'release_note: {task["release_note"]}')
+    print(f'rebuild_lib: {task["rebuild_lib"]}')
 
 
 def main():
