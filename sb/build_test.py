@@ -41,7 +41,7 @@ def main():
     sb_jks = sb_jenkins.SBJenkins(sb_cfg)
 
     lib_version_dict = {}
-    print('get lib test version:')
+    print(f'get lib test version: {len(libs)}')
     for lib in libs:
         lib_test_version = sb_nxs.get_next_lib_version(lib, rebuild_lib)
         print(f'    {lib} -> {lib_test_version}')
@@ -50,7 +50,7 @@ def main():
             return
         lib_version_dict[lib] = lib_test_version
 
-    print('update lib version:')
+    print(f'update lib version: {len(libs)}')
     if rebuild_lib:
         for lib, version in lib_version_dict.items():
             r = sb_gtlb.update_lib_version(branch, lib, lib_test_version)
@@ -61,7 +61,7 @@ def main():
     else:
         print(f'    not rebuild libs')
 
-    print('check app work branch:')
+    print(f'check app work branch: {len(apps)}')
     for app in apps:
         exist = sb_gtlb.is_app_branch_exist(app, branch)
         if exist:
@@ -74,7 +74,7 @@ def main():
                 print(f'    create branch {branch} for {app} fail')
                 return
 
-    print('update app dependencies:')
+    print(f'update app dependencies: {len(apps)}')
     for app in apps:
         r = sb_gtlb.update_app_dependencies(branch, app, lib_version_dict)
         print(f'    {app} -> {r}')
@@ -82,7 +82,7 @@ def main():
             print(f'    update {app} dependencies fail')
             return
 
-    print('build test lib:')
+    print(f'build test lib: {len(libs)}')
     if rebuild_lib:
         for lib in libs:
             r = sb_jks.build_test_lib(lib, branch, release_note)
@@ -93,7 +93,7 @@ def main():
     else:
         print(f'    not rebuild libs')
 
-    print('build test app:')
+    print(f'build test app: {len(apps)}')
     for app in apps:
         r = sb_jks.build_test_app(app, branch, release_note)
         print(f'    {app} -> {r}')
