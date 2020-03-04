@@ -35,11 +35,18 @@ class SBJenkins:
                                                                'ReleaseNote': f'{release_note}',
                                                                'BizBuild': True,
                                                                'Flavor': 'qa'})
-        queue_item = self._server.get_queue_item(queue_item_number)
-        build_number = queue_item['executable']['number']
 
+        build_number = None
         while True:
             time.sleep(30)
+
+            if not build_number:
+                queue_item = self._server.get_queue_item(queue_item_number)
+                if 'executable' in queue_item:
+                    build_number = queue_item['executable']['number']
+                else:
+                    continue
+
             build_info = self._server.get_build_info(name=app_job_name, number=build_number)
             if not build_info['building']:
                 if build_info['result'] == 'SUCCESS':
@@ -70,11 +77,18 @@ class SBJenkins:
                                                                    self._sb_config['gitlab']['private_token'],
                                                                'BuildModule': lib_info['module'],
                                                                'MergeToMaster': False})
-        queue_item = self._server.get_queue_item(queue_item_number)
-        build_number = queue_item['executable']['number']
 
+        build_number = None
         while True:
             time.sleep(10)
+
+            if not build_number:
+                queue_item = self._server.get_queue_item(queue_item_number)
+                if 'executable' in queue_item:
+                    build_number = queue_item['executable']['number']
+                else:
+                    continue
+
             build_info = self._server.get_build_info(name=lib_job_name, number=build_number)
             if not build_info['building']:
                 if build_info['result'] == 'SUCCESS':

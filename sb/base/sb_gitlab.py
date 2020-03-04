@@ -68,6 +68,12 @@ class SBGitlab:
 
         old_build_file_content = str(proj.files.get(file_path=build_file_path, ref=branch).decode(), encoding='utf-8')
         version_reg = re.compile('NEXUS_DEPLOY_VERSION.*\".*\"')
+
+        all_match = re.findall(version_reg, old_build_file_content)
+        old_version = all_match[0].split('=')[1].strip().replace('"', '')
+        if old_version == lib_version:
+            return True
+
         new_build_file_content = re.sub(version_reg, f'NEXUS_DEPLOY_VERSION = "{lib_version}"', old_build_file_content)
 
         data = {
@@ -108,9 +114,17 @@ class SBGitlab:
         old_build_file_content = str(proj.files.get(file_path=build_file_path, ref=branch).decode(), encoding='utf-8')
 
         lib_force = ''
+        lib_version_changed = False
         for lib, lib_version in lib_dict.items():
             lib_info = self._get_lib_info(lib)
             dependency_reg = re.compile(lib_info['group_id'] + ':' + lib + ':.*[\d|local]')
+
+            all_match = re.findall(dependency_reg, old_build_file_content)
+            for m in all_match:
+                old_lib_version = m.split(':')[2].strip()
+                if old_lib_version != lib_version:
+                    lib_version_changed = True
+
             new_dependency = lib_info['group_id'] + ':' + lib + ':' + lib_version
             new_build_file_content = re.sub(dependency_reg, new_dependency, old_build_file_content)
 
@@ -125,6 +139,9 @@ class SBGitlab:
         else:
             new_build_file_content += '\n'
             new_build_file_content += full_force
+
+        if not lib_version_changed:
+            return True
 
         data = {
             'branch': branch,
