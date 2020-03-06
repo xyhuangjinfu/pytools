@@ -111,7 +111,7 @@ class SBGitlab:
 
         proj = self._server.projects.get(app_info['project_id'])
         build_file_path = 'app/build.gradle'
-        old_build_file_content = str(proj.files.get(file_path=build_file_path, ref=branch).decode(), encoding='utf-8')
+        build_file_content = str(proj.files.get(file_path=build_file_path, ref=branch).decode(), encoding='utf-8')
 
         lib_force = ''
         lib_version_changed = False
@@ -119,14 +119,15 @@ class SBGitlab:
             lib_info = self._get_lib_info(lib)
             dependency_reg = re.compile(lib_info['group_id'] + ':' + lib + ':.*[\d|local]')
 
-            all_match = re.findall(dependency_reg, old_build_file_content)
+            all_match = re.findall(dependency_reg, build_file_content)
             for m in all_match:
                 old_lib_version = m.split(':')[2].strip()
                 if old_lib_version != lib_version:
                     lib_version_changed = True
+                    break
 
             new_dependency = lib_info['group_id'] + ':' + lib + ':' + lib_version
-            new_build_file_content = re.sub(dependency_reg, new_dependency, old_build_file_content)
+            build_file_content = re.sub(dependency_reg, new_dependency, build_file_content)
 
             lib_force += 'force ' + "'" + new_dependency + "'" + '\n'
 
@@ -134,11 +135,9 @@ class SBGitlab:
         force_end = '//force end'
         full_force = force_start + '\n' + '//TODO for test, must be deleted in release\nconfigurations.all { resolutionStrategy { ' + lib_force + ' } }' + '\n' + force_end
         force_reg = re.compile(force_start + '[\s\S]*' + force_end)
-        if re.findall(force_reg, new_build_file_content):
-            new_build_file_content = re.sub(force_reg, full_force, new_build_file_content)
-        else:
-            new_build_file_content += '\n'
-            new_build_file_content += full_force
+        if not re.findall(force_reg, build_file_content):
+            build_file_content += '\n'
+            build_file_content += full_force
 
         if not lib_version_changed:
             return True
@@ -150,7 +149,7 @@ class SBGitlab:
                 {
                     'action': 'update',
                     'file_path': build_file_path,
-                    'content': new_build_file_content
+                    'content': build_file_content
                 }
             ]
         }
