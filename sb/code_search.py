@@ -20,7 +20,7 @@ def update_project_repo(project):
 
 def search(query):
     if query != '':
-        subprocess.call(['grep', '-r', '-A', '5', '-B', '5', '-n', '--color=auto', query, '.'])
+        subprocess.call(['grep', '-r', '-A', '5', '-B', '5', '-n', '--color=auto', '-E', query, '.'])
 
 
 def refresh_repo():
@@ -46,7 +46,7 @@ def get_cli_args():
     parser = argparse.ArgumentParser(description='代码搜索工具，hound本地替代版')
 
     parser.add_argument('-r', action='store_true', default=False, help='获取最新master分支代码')
-    parser.add_argument('query', default='', type=str, help='要查找的内容，使用单引号包裹')
+    parser.add_argument('query', default='', type=str, help='要查找的内容，支持正则，使用单引号包裹')
 
     return parser.parse_args()
 
