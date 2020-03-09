@@ -46,7 +46,7 @@ def get_cli_args():
     parser = argparse.ArgumentParser(description='代码搜索工具，hound本地替代版')
 
     parser.add_argument('-r', action='store_true', default=False, help='获取最新master分支代码')
-    parser.add_argument('query', default='', type=str, help='要查找的内容')
+    parser.add_argument('query', default='', type=str, help='要查找的内容，使用单引号包裹')
 
     return parser.parse_args()
 
