@@ -160,6 +160,25 @@ class SBGitlab:
         except Exception:
             return False
 
+    def get_projects_by_group(self, group_id):
+        """
+        查询给定group下面的所有未归档项目
+        :param group_id:
+        :return:
+        """
+        ps = []
+        page = 1
+
+        while True:
+            r = self._server.groups.get(group_id).projects.list(per_page=100, page=page, archived=False)
+            if r:
+                ps.extend(r)
+                page += 1
+            else:
+                break
+
+        return ps
+
     def _get_lib_info(self, lib):
         return self._sb_config['libs'][lib]
 
