@@ -1,8 +1,19 @@
 import argparse
 import os
+import shutil
 import subprocess
 
 from base import sb_config, sb_gitlab
+
+
+def delete_project(project):
+    old_path = os.getcwd()
+
+    project_path = os.path.join(old_path, project.name)
+    if os.path.isdir(project_path):
+        shutil.rmtree(project_path)
+
+    os.chdir(old_path)
 
 
 def update_project_repo(project):
