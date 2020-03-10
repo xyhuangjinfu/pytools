@@ -10,23 +10,14 @@ def delete_project(project):
     old_path = os.getcwd()
 
     project_path = os.path.join(old_path, project.name)
-    if os.path.isdir(project_path):
+    if os.path.exists(project_path):
         shutil.rmtree(project_path)
 
     os.chdir(old_path)
 
 
-def update_project_repo(project):
-    old_path = os.getcwd()
-
-    project_path = os.path.join(old_path, project.name)
-    if os.path.isdir(project_path):
-        os.chdir(project_path)
-        subprocess.call(['git', 'pull', 'origin', 'master', '--depth', '1'])
-    else:
-        subprocess.call(['git', 'clone', '-b', 'master', '--depth', '1', project.http_url_to_repo])
-
-    os.chdir(old_path)
+def clone_project_repo(project):
+    subprocess.call(['git', 'clone', '-b', 'master', '--depth', '1', project.http_url_to_repo])
 
 
 def search(query):
@@ -40,7 +31,8 @@ def refresh_repo():
     projects = sb_gtlb.get_projects_by_group(29)
 
     for p in projects:
-        update_project_repo(p)
+        delete_project(p)
+        clone_project_repo(p)
 
 
 def main(refresh, query):
