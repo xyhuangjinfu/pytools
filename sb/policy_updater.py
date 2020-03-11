@@ -53,6 +53,7 @@ def _update_policy_url(root_dir, policy_dict):
                   code)
 
     fp.seek(0)
+    fp.truncate()
     fp.write(code)
     fp.close()
 
@@ -71,6 +72,7 @@ def _update_single_policy_file(file_path, url):
     response_str = response.read().decode('utf-8')
 
     fp = open(file_path, 'r+')
+    fp.truncate()
     fp.write(response_str)
     fp.close()
 
