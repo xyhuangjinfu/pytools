@@ -64,6 +64,37 @@ class SBNexus:
         else:
             return '0.0.0.0-test-hjf-1'
 
+    def get_all_lib_version(self, lib):
+        """
+        获取一个库的所有已发布版本号
+        :param lib:
+        :return: 获取失败返回None
+        """
+        server_url = self._sb_config['nexus']['server_url']
+        group_id = self._sb_config['libs'][lib]['group_id']
+        group_path = group_id.replace('.', '/')
+        url = f'{server_url}service/local/repositories/releases/content/{group_path}/{lib}/'
+        req = urllib.request.Request(url, headers={'Cookie': f'NXSESSIONID={self._token}',
+                                                   'Accept': 'application/json'})
+
+        resp = urllib.request.urlopen(req)
+
+        resp_code = resp.getcode()
+        if resp_code != 200:
+            return None
+
+        resp_body = resp.read().decode('utf-8')
+
+        version_list = []
+        obj = json.loads(resp_body)
+        li = obj['data']
+
+        for a in li:
+            if not a['leaf'] and '-test-hjf' in a['text']:
+                version_list.append(a['text'])
+
+        return version_list
+
     def _login(self):
         """
         登录到nexus服务器
