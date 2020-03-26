@@ -18,27 +18,8 @@ class SBNexus:
         :param rebuild_lib: True-生成下一个版本号，后续重新编译。False-使用之前编过的版本，默认是最新版本
         :return: 获取失败返回None
         """
-        server_url = self._sb_config['nexus']['server_url']
-        group_id = self._sb_config['libs'][lib]['group_id']
-        group_path = group_id.replace('.', '/')
-        url = f'{server_url}service/local/repositories/releases/content/{group_path}/{lib}/'
-        req = urllib.request.Request(url, headers={'Cookie': f'NXSESSIONID={self._token}',
-                                                   'Accept': 'application/json'})
 
-        resp = urllib.request.urlopen(req)
-
-        resp_code = resp.getcode()
-        if resp_code != 200:
-            return None
-
-        resp_body = resp.read().decode('utf-8')
-
-        version_list = []
-        obj = json.loads(resp_body)
-        li = obj['data']
-        for a in li:
-            if not a['leaf'] and '-test-hjf' in a['text']:
-                version_list.append(a['text'])
+        version_list = self.get_all_lib_version(lib)
 
         if version_list:
             def sory_key(v):
