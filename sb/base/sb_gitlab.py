@@ -94,6 +94,27 @@ class SBGitlab:
         except Exception:
             return False
 
+    def get_lib_latest_version(self, lib):
+        """
+        从lib的master分支获取最新的版本号
+        :param lib:
+        :return:
+        """
+
+        lib_info = self._get_lib_info(lib)
+
+        proj = self._server.projects.get(lib_info['project_id'])
+        module = lib_info['module']
+        build_file_path = f'{module}/build.gradle'
+
+        build_file_content = str(proj.files.get(file_path=build_file_path, ref='master').decode(), encoding='utf-8')
+        version_reg = re.compile('NEXUS_DEPLOY_VERSION.*\".*\"')
+
+        all_match = re.findall(version_reg, build_file_content)
+        version = all_match[0].split('=')[1].strip().replace('"', '')
+
+        return version
+
     def update_app_dependencies(self, branch, app, lib_dict):
         """
         更新要被测试的app的测试分支上，指定库的版本号为测试专用版本号
