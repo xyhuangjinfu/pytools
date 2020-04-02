@@ -19,7 +19,7 @@ class SBNexus:
         :return: 获取失败返回None
         """
 
-        version_list = self.get_all_lib_version(lib)
+        version_list = self.get_all_lib_version_hjf(lib)
 
         if version_list:
             def sory_key(v):
@@ -45,7 +45,7 @@ class SBNexus:
         else:
             return '0.0.0.0-test-hjf-1'
 
-    def get_all_lib_version(self, lib):
+    def get_all_lib_version_hjf(self, lib):
         """
         获取一个库的所有已发布版本号
         :param lib:
