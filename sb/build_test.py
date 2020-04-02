@@ -117,7 +117,7 @@ def update_app_dependencies(sb_gtlb, apps, branch, lib_version_dict):
     """
     print(f'update app dependencies: {len(apps)}')
     for app in apps:
-        r = sb_gtlb.update_app_dependencies(branch, app, lib_version_dict)
+        r = sb_gtlb.update_app_dependencies_without_force(branch, app, lib_version_dict)
         print(f'    {app} -> {r}')
         if not r:
             print(f'    update {app} dependencies fail')

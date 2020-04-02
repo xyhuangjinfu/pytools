@@ -181,6 +181,61 @@ class SBGitlab:
         except Exception:
             return False
 
+    def update_app_dependencies_without_force(self, branch, app, lib_dict):
+        """
+        更新要被测试的app的测试分支上，指定库的版本号为测试专用版本号
+        :param branch:
+        :param app:
+        :param lib:
+        :param lib_version:
+        :return:失败返回False
+        """
+
+        if not lib_dict:
+            return True
+
+        app_info = self._get_app_info(app)
+
+        proj = self._server.projects.get(app_info['project_id'])
+        build_file_path = 'app/build.gradle'
+        build_file_content = str(proj.files.get(file_path=build_file_path, ref=branch).decode(), encoding='utf-8')
+
+        lib_version_changed = False
+        for lib, lib_version in lib_dict.items():
+            lib_info = self._get_lib_info(lib)
+            dependency_reg = re.compile(lib_info['group_id'] + ':' + lib + ':.*[\d|local]')
+
+            all_match = re.findall(dependency_reg, build_file_content)
+            for m in all_match:
+                old_lib_version = m.split(':')[2].strip()
+                if old_lib_version != lib_version:
+                    lib_version_changed = True
+                    break
+
+            new_dependency = lib_info['group_id'] + ':' + lib + ':' + lib_version
+            build_file_content = re.sub(dependency_reg, new_dependency, build_file_content)
+
+        if not lib_version_changed:
+            return True
+
+        data = {
+            'branch': branch,
+            'commit_message': 'change dependency',
+            'actions': [
+                {
+                    'action': 'update',
+                    'file_path': build_file_path,
+                    'content': build_file_content
+                }
+            ]
+        }
+
+        try:
+            proj.commits.create(data)
+            return True
+        except Exception:
+            return False
+
     def get_projects_by_group(self, group_id):
         """
         查询给定group下面的所有未归档项目
