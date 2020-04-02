@@ -40,6 +40,29 @@ def get_lib_test_version(sb_nxs, libs, rebuild_lib):
     return lib_version_dict
 
 
+def get_lib_test_version_1(sb_gtlb, sb_nxs, libs, rebuild_lib):
+    """
+    获取所有库的测试版本号（-test-username-version）
+    :param sb_nxs:
+    :param libs:
+    :param rebuild_lib: True-重新升版本号，编译。False-使用已有的包。
+    :return:
+    """
+    print(f'get lib test version: {len(libs)}')
+    lib_version_dict = {}
+    for lib in libs:
+        latest_version = sb_gtlb.get_lib_latest_version(lib)
+        next_version = _get_next_lib_version(latest_version)
+        all_versions = sb_nxs.get_all_lib_version(lib)
+        lib_test_version = _get_test_lib_version(next_version, all_versions, rebuild_lib)
+        print(f'    {lib} -> {lib_test_version}')
+        if lib_test_version is None:
+            print(f'    get {lib} test version fail')
+            return None
+        lib_version_dict[lib] = lib_test_version
+    return lib_version_dict
+
+
 def update_lib_version(sb_gtlb, branch, lib_version_dict, rebuild_lib):
     """
     在库的指定分支上更新版本号
@@ -162,7 +185,7 @@ def _get_next_lib_version(current_version):
         raise Exception(f'库版本号不是3位或4位，{current_version}')
 
 
-def _get_test_lib_version(next_version, all_version_list):
+def _get_test_lib_version(next_version, all_version_list, rebuild_lib):
     if next_version in all_version_list:
         raise Exception(f'下一个版本号 {next_version} 已经发过版本，出错了。')
     test_versions = []
@@ -178,10 +201,17 @@ def _get_test_lib_version(next_version, all_version_list):
 
         test_versions.sort(key=sort_key, reverse=True)
         newest_test_version = test_versions[0]
+
+        if not rebuild_lib:
+            return newest_test_version
+
         seg = newest_test_version.split('-')
         seg[len(seg) - 1] = str(int(seg[len(seg) - 1]) + 1)
         return '-'.join(seg)
     else:
+        if not rebuild_lib:
+            raise Exception('没有可用的测试版本，必须要重新编译')
+
         return test_version_prefix + '-1'
 
 
@@ -205,7 +235,7 @@ def main():
     sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
     sb_jks = sb_jenkins.SBJenkins(sb_cfg)
 
-    lib_version_dict = get_lib_test_version(sb_nxs, libs, rebuild_lib)
+    lib_version_dict = get_lib_test_version_1(sb_nxs, libs, rebuild_lib)
     if not lib_version_dict:
         return 2
 
