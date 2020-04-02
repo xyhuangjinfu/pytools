@@ -140,6 +140,28 @@ def build_test_app(sb_jks, apps, branch, release_note):
     return True
 
 
+def _get_next_lib_version(current_version):
+    """
+    获取该版本号下一个版本号，3位4位分开处理
+    :param current_version:
+    :return:
+    """
+    seg = current_version.split('.')
+    ver_len = len(seg)
+    if ver_len == 4:
+        idx = ver_len - 2
+        new_v = int(seg[idx]) + 1
+        seg[idx] = str(new_v)
+        return '.'.join(seg)
+    elif ver_len == 3:
+        idx = ver_len - 1
+        new_v = int(seg[idx]) + 1
+        seg[idx] = str(new_v)
+        return '.'.join(seg)
+    else:
+        raise Exception(f'库版本号不是3位或4位，{current_version}')
+
+
 def main():
     task_file = sys.argv[1]
     task = json.load(open(task_file))
