@@ -162,6 +162,29 @@ def _get_next_lib_version(current_version):
         raise Exception(f'库版本号不是3位或4位，{current_version}')
 
 
+def _get_test_lib_version(next_version, all_version_list):
+    if next_version in all_version_list:
+        raise Exception(f'下一个版本号 {next_version} 已经发过版本，出错了。')
+    test_versions = []
+    test_version_prefix = next_version + '-test-hjf'
+    for v in all_version_list:
+        if test_version_prefix in v:
+            test_versions.append(v)
+
+    if test_versions:
+        def sort_key(e):
+            seg = e.split('-')
+            return int(seg[len(seg) - 1])
+
+        test_versions.sort(key=sort_key, reverse=True)
+        newest_test_version = test_versions[0]
+        seg = newest_test_version.split('-')
+        seg[len(seg) - 1] = str(int(seg[len(seg) - 1]) + 1)
+        return '-'.join(seg)
+    else:
+        return test_version_prefix + '-1'
+
+
 def main():
     task_file = sys.argv[1]
     task = json.load(open(task_file))
