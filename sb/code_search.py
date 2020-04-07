@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 
+from colorama import Fore, Style
+
 from base import sb_config, sb_gitlab
 
 
@@ -21,6 +23,13 @@ def clone_project_repo(project):
 
 
 def search(query):
+    print(Fore.BLUE + '----- search result---------------------------------------------'
+                      '----------------------------------------------------------------'
+                      '----------------------------------------------------------------')
+    print(Fore.BLUE + '----------------------------------------------------------------'
+                      '----------------------------------------------------------------'
+                      '----------------------------------------------------------------')
+    print(Style.RESET_ALL)
     if query != '':
         subprocess.call(['grep', '-r', '-A', '5', '-B', '5', '-n', '--color=auto', '-E', query, '.'])
 
