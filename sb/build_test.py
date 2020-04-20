@@ -218,6 +218,8 @@ def _get_test_lib_version(next_version, all_version_list, rebuild_lib):
 def main():
     task_file = sys.argv[1]
     task = json.load(open(task_file))
+    # rebuild_lib deprecated, always True
+    task["rebuild_lib"] = True
 
     _print_task(task)
     execute = input('确认参数正确，继续执行？（y/n）')
