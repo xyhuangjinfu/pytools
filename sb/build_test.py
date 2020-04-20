@@ -235,7 +235,7 @@ def main():
     sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
     sb_jks = sb_jenkins.SBJenkins(sb_cfg)
 
-    lib_version_dict = get_lib_test_version_1(sb_nxs, libs, rebuild_lib)
+    lib_version_dict = get_lib_test_version_1(sb_gtlb, sb_nxs, libs, rebuild_lib)
     if not lib_version_dict:
         return 2
 
