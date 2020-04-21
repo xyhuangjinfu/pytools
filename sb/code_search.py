@@ -8,16 +8,6 @@ from colorama import Fore, Style
 from base import sb_config, sb_gitlab
 
 
-def delete_project(project):
-    old_path = os.getcwd()
-
-    project_path = os.path.join(old_path, project.name)
-    if os.path.exists(project_path):
-        shutil.rmtree(project_path)
-
-    os.chdir(old_path)
-
-
 def clone_project_repo(project):
     subprocess.call(['git', 'clone', '-b', 'master', '--depth', '1', project.http_url_to_repo])
 
@@ -39,9 +29,17 @@ def refresh_repo():
     sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
     projects = sb_gtlb.get_projects_by_group(29)
 
+    delete_all_project()
+
     for p in projects:
-        delete_project(p)
         clone_project_repo(p)
+
+
+def delete_all_project():
+    project_dirs = os.listdir()
+    for project_dir in project_dirs:
+        if os.path.isdir(project_dir):
+            shutil.rmtree(project_dir)
 
 
 def main(refresh, query):
