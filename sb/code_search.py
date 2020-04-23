@@ -8,6 +8,10 @@ from colorama import Fore, Style
 from base import sb_config, sb_gitlab
 
 
+def get_remote_master_latest_commit(sb_gtlb: sb_gitlab.SBGitlab, project_id):
+    return sb_gtlb.get_latest_commit(project_id, 'master')
+
+
 def get_local_master_latest_commit(project_path):
     """
     获取指定项目本地master的最新提交id
