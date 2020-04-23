@@ -72,6 +72,15 @@ def delete_all_project():
             shutil.rmtree(project_dir)
 
 
+def get_all_local_projects():
+    project_names = []
+    project_dirs = os.listdir()
+    for project_dir in project_dirs:
+        if os.path.isdir(project_dir):
+            project_names.append(project_dir)
+    return project_names
+
+
 def main(refresh, query):
     root_path = '/Users/huangjinfu/work/codesearch/'
     os.chdir(root_path)
