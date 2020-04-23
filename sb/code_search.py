@@ -81,6 +81,13 @@ def get_all_local_projects():
     return project_names
 
 
+def get_all_remote_projects():
+    sb_cfg = sb_config.SBConfig()
+    sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
+    projects = sb_gtlb.get_projects_by_group(29)
+    return projects
+
+
 def get_projects_diff(local_project_name_set: set, remote_project_name_set: set):
     deleted = local_project_name_set.difference(remote_project_name_set)
     newly = remote_project_name_set.difference(local_project_name_set)
