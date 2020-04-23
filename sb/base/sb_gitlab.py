@@ -255,6 +255,17 @@ class SBGitlab:
 
         return ps
 
+    def get_latest_commit(self, project_id, branch):
+        """
+        获取指定库指定分支的最新提交的commit id
+        :param project_id:
+        :param branch:
+        :return:
+        """
+        proj = self._server.projects.get(project_id)
+        commits = proj.commits.list(ref_name=branch, per_page=1)
+        return commits[0].id
+
     def _get_lib_info(self, lib):
         return self._sb_config['libs'][lib]
 
