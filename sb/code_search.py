@@ -81,6 +81,14 @@ def get_all_local_projects():
     return project_names
 
 
+def get_projects_diff(local_project_name_set: set, remote_project_name_set: set):
+    deleted = local_project_name_set.difference(remote_project_name_set)
+    newly = remote_project_name_set.difference(local_project_name_set)
+    remain = local_project_name_set.intersection(remote_project_name_set)
+
+    return deleted, newly, remain
+
+
 def main(refresh, query):
     root_path = '/Users/huangjinfu/work/codesearch/'
     os.chdir(root_path)
