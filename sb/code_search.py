@@ -7,6 +7,20 @@ from colorama import Fore, Style
 
 from base import sb_config, sb_gitlab
 
+ROOT_PATH = '/Users/huangjinfu/work/codesearch/'
+
+
+def need_update_project(sb_gtlb: sb_gitlab.SBGitlab, project):
+    local_commit = get_local_master_latest_commit(os.path.join(ROOT_PATH, project.name)).strip()
+    remote_commit = get_remote_master_latest_commit(sb_gtlb, project.id).strip()
+
+    return local_commit != remote_commit
+
+
+def update_project(project):
+    delete_project(project.name)
+    clone_project_repo(project)
+
 
 def get_remote_master_latest_commit(sb_gtlb: sb_gitlab.SBGitlab, project_id):
     return sb_gtlb.get_latest_commit(project_id, 'master')
@@ -44,25 +58,10 @@ def search(query):
         subprocess.call(['grep', '-r', '-A', '5', '-B', '5', '-n', '--color=auto', '-E', query, '.'])
 
 
-def refresh_repo():
-    sb_cfg = sb_config.SBConfig()
-    sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
-    projects = sb_gtlb.get_projects_by_group(29)
-
-    delete_all_project()
-
-    for p in projects:
-        clone_project_repo(p)
-
-
-def delete_project(project):
-    old_path = os.getcwd()
-
-    project_path = os.path.join(old_path, project.name)
+def delete_project(project_name):
+    project_path = os.path.join(ROOT_PATH, project_name)
     if os.path.exists(project_path):
         shutil.rmtree(project_path)
-
-    os.chdir(old_path)
 
 
 def delete_all_project():
@@ -81,9 +80,7 @@ def get_all_local_projects():
     return project_names
 
 
-def get_all_remote_projects():
-    sb_cfg = sb_config.SBConfig()
-    sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
+def get_all_remote_projects(sb_gtlb):
     projects = sb_gtlb.get_projects_by_group(29)
     return projects
 
@@ -96,12 +93,42 @@ def get_projects_diff(local_project_name_set: set, remote_project_name_set: set)
     return deleted, newly, remain
 
 
+def refresh_projects():
+    sb_cfg = sb_config.SBConfig()
+    sb_gtlb = sb_gitlab.SBGitlab(sb_cfg)
+
+    local_set = set(get_all_local_projects())
+    remote_projects = get_all_remote_projects(sb_gtlb)
+    remote_projects_dict = {rp.name: rp for rp in remote_projects}
+    remote_set = set([rp.name for rp in remote_projects])
+
+    deleted, newly, remain = get_projects_diff(local_set, remote_set)
+
+    for p in deleted:
+        print(Fore.RED + f"delete {p}")
+        print(Style.RESET_ALL)
+        delete_project(p)
+    for p in newly:
+        print(Fore.RED + f"newly {p}")
+        print(Style.RESET_ALL)
+        clone_project_repo(remote_projects_dict[p])
+    for p in remain:
+        need_update = need_update_project(sb_gtlb, remote_projects_dict[p])
+        if need_update:
+            print(Fore.RED + f"update {p}")
+            print(Style.RESET_ALL)
+            update_project(remote_projects_dict[p])
+        else:
+            print(Fore.RED + f"remain {p}")
+            print(Style.RESET_ALL)
+
+
 def main(refresh, query):
     root_path = '/Users/huangjinfu/work/codesearch/'
     os.chdir(root_path)
 
     if refresh:
-        refresh_repo()
+        refresh_projects()
 
     search(query)
 
