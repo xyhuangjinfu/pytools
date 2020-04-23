@@ -55,6 +55,16 @@ def refresh_repo():
         clone_project_repo(p)
 
 
+def delete_project(project):
+    old_path = os.getcwd()
+
+    project_path = os.path.join(old_path, project.name)
+    if os.path.exists(project_path):
+        shutil.rmtree(project_path)
+
+    os.chdir(old_path)
+
+
 def delete_all_project():
     project_dirs = os.listdir()
     for project_dir in project_dirs:
