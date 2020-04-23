@@ -8,6 +8,22 @@ from colorama import Fore, Style
 from base import sb_config, sb_gitlab
 
 
+def get_local_master_latest_commit(project_path):
+    """
+    获取指定项目本地master的最新提交id
+    :param project_path:
+    :return:
+    """
+    old_path = os.getcwd()
+
+    os.chdir(project_path)
+    call_git = subprocess.check_output(['git', 'rev-parse', 'master'])
+    commit = call_git.decode('utf-8')
+
+    os.chdir(old_path)
+    return commit
+
+
 def clone_project_repo(project):
     subprocess.call(['git', 'clone', '-b', 'master', '--depth', '1', project.http_url_to_repo])
 
