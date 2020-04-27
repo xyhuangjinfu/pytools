@@ -46,7 +46,7 @@ def clone_project_repo(project):
     subprocess.call(['git', 'clone', '-b', 'master', '--depth', '1', project.http_url_to_repo])
 
 
-def search(query):
+def search(query, lines):
     print(Fore.BLUE + '----- search result---------------------------------------------'
                       '----------------------------------------------------------------'
                       '----------------------------------------------------------------')
@@ -55,7 +55,7 @@ def search(query):
                       '----------------------------------------------------------------')
     print(Style.RESET_ALL)
     if query != '':
-        subprocess.call(['grep', '-r', '-A', '5', '-B', '5', '-n', '--color=auto', '-E', query, '.'])
+        subprocess.call(['grep', '-r', '-A', lines, '-B', lines, '-n', '--color=auto', '-E', query, '.'])
 
 
 def delete_project(project_name):
@@ -123,20 +123,21 @@ def refresh_projects():
             print(Style.RESET_ALL)
 
 
-def main(refresh, query):
+def main(refresh, query, lines):
     root_path = '/Users/huangjinfu/work/codesearch/'
     os.chdir(root_path)
 
     if refresh:
         refresh_projects()
 
-    search(query)
+    search(query, lines)
 
 
 def get_cli_args():
     parser = argparse.ArgumentParser(description='代码搜索工具，hound本地替代版')
 
-    parser.add_argument('-r', action='store_true', default=False, help='获取最新master分支代码')
+    parser.add_argument('-r', action='store_true', default=False, help='refresh, 获取最新master分支代码')
+    parser.add_argument('-l', action='store', default='0', help='lines, 前后行数，grep -A -B 参数，默认为0')
     parser.add_argument('query', default='', type=str, help='要查找的内容，支持正则，使用单引号包裹')
 
     return parser.parse_args()
@@ -144,4 +145,4 @@ def get_cli_args():
 
 if __name__ == '__main__':
     args = get_cli_args()
-    main(args.r, args.query)
+    main(args.r, args.query, args.l)
