@@ -105,21 +105,21 @@ def refresh_projects():
     deleted, newly, remain = get_projects_diff(local_set, remote_set)
 
     for p in deleted:
-        print(Fore.RED + f"delete {p}")
+        print(Fore.RED + f"delete {p}", end='')
         print(Style.RESET_ALL)
         delete_project(p)
     for p in newly:
-        print(Fore.RED + f"newly {p}")
+        print(Fore.GREEN + f"newly {p}", end='')
         print(Style.RESET_ALL)
         clone_project_repo(remote_projects_dict[p])
     for p in remain:
         need_update = need_update_project(sb_gtlb, remote_projects_dict[p])
         if need_update:
-            print(Fore.RED + f"update {p}")
+            print(Fore.YELLOW + f"update {p}", end='')
             print(Style.RESET_ALL)
             update_project(remote_projects_dict[p])
         else:
-            print(Fore.RED + f"remain {p}")
+            print(Fore.CYAN + f"remain {p}", end='')
             print(Style.RESET_ALL)
 
 
