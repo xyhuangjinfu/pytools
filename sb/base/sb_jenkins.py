@@ -95,3 +95,46 @@ class SBJenkins:
                     return True
                 else:
                     return False
+
+    def build_lib(self, param):
+        lib_job_name = 'Quark-Lib-Build'
+        queue_item_number = self._server.build_job(lib_job_name, parameters=param)
+
+        build_number = None
+        while True:
+            time.sleep(10)
+
+            if not build_number:
+                queue_item = self._server.get_queue_item(queue_item_number)
+                if 'executable' in queue_item:
+                    build_number = queue_item['executable']['number']
+                else:
+                    continue
+
+            build_info = self._server.get_build_info(name=lib_job_name, number=build_number)
+            if not build_info['building']:
+                if build_info['result'] == 'SUCCESS':
+                    return True
+                else:
+                    return False
+
+    def create_build_lib_param(self, lib, branch, release_note, debug):
+        if debug:
+            mail_address = 'jinfu.huang@shanbay.com'
+            create_tag = False
+            merge_to_master = False
+        else:
+            mail_address = 'android@shanbay.com'
+            create_tag = True
+            merge_to_master = True
+
+        lib_info = self._sb_config['libs'][lib]
+        return {'BuildGit': lib_info['git'],
+                'BuildBranch': f'{branch}',
+                'MailAddress': mail_address,
+                'ReleaseNote': f'{release_note}',
+                'CreateTag': create_tag,
+                'PrivateToken':
+                    self._sb_config['gitlab']['private_token'],
+                'BuildModule': lib_info['module'],
+                'MergeToMaster': merge_to_master}
