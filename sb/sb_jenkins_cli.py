@@ -7,7 +7,7 @@ def build_lib(jks, arg):
     if 'debug' == arg.build_type:
         build_param = jks.create_build_lib_param(arg.lib, arg.branch, arg.release_note, True)
     else:
-        build_param = jks.create_build_lib_param(arg.lib, arg.branch, arg.release_note, True)
+        build_param = jks.create_build_lib_param(arg.lib, arg.branch, arg.release_note, False)
     return jks.build_lib(build_param)
 
 
