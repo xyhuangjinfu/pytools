@@ -117,6 +117,7 @@ def launch_app(app_id, app_main_activity):
     :param app_main_activity:
     :return:
     """
+    subprocess.call(['adb', 'shell', 'am', 'force-stop', app_id])
     subprocess.call(['adb', 'shell', 'am', 'start', '-n', app_id + '/' + app_main_activity])
 
 
