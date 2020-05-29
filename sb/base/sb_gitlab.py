@@ -271,3 +271,17 @@ class SBGitlab:
 
     def _get_app_info(self, app):
         return self._sb_config['apps'][app]
+
+    def get_all_branches(self, project):
+        bs = []
+        page = 1
+
+        while True:
+            b = self._server.projects.get(project).branches.list(per_page=100, page=page, archived=False)
+            if b:
+                bs.extend(b)
+                page += 1
+            else:
+                break
+        print(page)
+        return bs
